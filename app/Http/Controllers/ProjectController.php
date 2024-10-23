@@ -173,16 +173,34 @@ class ProjectController extends Controller
 
 
 
-    public function viewITCapstones()
+    public function viewITCapstones(Request $request)
     {
-        // Fetch IT capstone projects from the database
-        $itCapstoneProjects = Project::where('course', 'IT')->get();
-
-        // Pass the data to the Inertia view
+        $searchQuery = $request->input('search');
+    
+        // Fetch IT capstone projects from the database with pagination and optional search filtering
+        $itCapstoneProjects = Project::where('course', 'IT')
+            ->when($searchQuery, function ($query, $searchQuery) {
+                $query->where(function ($query) use ($searchQuery) {
+                    $query->where('title', 'LIKE', "%$searchQuery%")
+                        ->orWhere('ipRegistration', 'LIKE', "%$searchQuery%")
+                        ->orWhere('author1', 'LIKE', "%$searchQuery%")
+                        ->orWhere('author2', 'LIKE', "%$searchQuery%")
+                        ->orWhere('author3', 'LIKE', "%$searchQuery%")
+                        ->orWhere('author4', 'LIKE', "%$searchQuery%")
+                        ->orWhere('keywords', 'LIKE', "%$searchQuery%");
+                        
+                });
+            })
+            ->paginate(10); // Adjust the number of items per page
+    
+        // Pass the paginated data to the Inertia view
         return Inertia::render('AdminView/AdminViewITipr', [
             'itCapstoneProjects' => $itCapstoneProjects,
+            'searchQuery' => $searchQuery // Pass the search query back to the frontend
         ]);
     }
+    
+    
 
     public function viewCSThesis()
     {

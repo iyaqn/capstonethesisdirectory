@@ -35,24 +35,17 @@ const AdminManageRoles = () => {
                   <tr>
                     <th>Faculty Member Name</th>
                     <th>Email Address</th>
-                    <th>Current Role</th>
-                    <th>New Role</th>
                     <th>Department</th>
+                    <th>Capstone Coordinator</th>
+                    <th>Status</th>
                     <th>Actions</th>
-                    <th>Last Updated By</th>
+                    <th>Last Updated</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>John Doe</td>
                     <td>john.doe@example.com</td>
-                    <td>Faculty</td>
-                    <td>
-                      <select>
-                        <option value="faculty">Faculty</option>
-                        <option value="capstone">Capstone Coordinator</option>
-                      </select>
-                    </td>
                     <td>
                       <select>
                         <option value="cs">CS</option>
@@ -60,8 +53,14 @@ const AdminManageRoles = () => {
                         <option value="is">IS</option>
                       </select>
                     </td>
+                    <td>
+                        {/* checkbox here for if user is capstone coordinator or not */}
+                    </td>
+                    <td>
+                      {/* checks here for account status */}
+                    </td>
                     <td><button className="deactivate-button">Deactivate</button></td>
-                    <td>Admin User</td>
+                    {/* <td>checks here when was last updated and who did it</td> */}
                   </tr>
                   {/* Add more rows as necessary */}
                 </tbody>

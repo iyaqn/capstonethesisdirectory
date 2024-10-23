@@ -9,7 +9,7 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
     const user = usePage().props.auth.user;
 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
-        name: user.name,
+        name: `${user.first_name} ${user.last_name}`,
         email: user.email,
     });
 
