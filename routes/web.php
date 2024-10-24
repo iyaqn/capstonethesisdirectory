@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -18,6 +19,7 @@ use Inertia\Inertia;
     Route::get('/admin/ip-registered/IT-cap', [ProjectController::class, 'viewITCapstones'])->name('admin/ip-registered/IT-cap');
     Route::get('/admin/ip-registered/IS-cap', [ProjectController::class, 'viewISCapstones'])->name('admin/ip-registered/IS-cap');
     Route::get('/admin/ip-registered/CS-thes', [ProjectController::class, 'viewCSThesis'])->name('admin/ip-registered/CS-thes');
+    Route::put('/admin/toggle-best-capstone/{id}', [ProjectController::class, 'toggleBestCapstone']);
 
     // Admin Add Proj Stuff
     Route::get('/admin/add-IT-Cap', [ProjectController::class, 'createIT'])->name('admin/add-IT-Cap');
@@ -57,22 +59,23 @@ use Inertia\Inertia;
         return Inertia::render('AdminView/AdminApprovalForm');
     })->name('admin/approval-form');
     
-    Route::get('/admin/BestIT', function () {
-        return Inertia::render('AdminView/AdminBestIT');
-    })->name('admin/BestIT');
-    
-    Route::get('/admin/BestIS', function () {
-        return Inertia::render('AdminView/AdminBestIS');
-    })->name('admin/BestIS');
-    
-    Route::get('/admin/BestCS', function () {
-        return Inertia::render('AdminView/AdminBestCS');
-    })->name('admin/BestCS');
+    // Admin Best Proj
+    Route::get('/admin/BestIT', [ProjectController::class, 'viewBestITCapstones'])->name('admin/BestIT');
+    Route::get('/admin/BestIS', [ProjectController::class, 'viewBestISCapstones'])->name('admin/BestIS');
+    Route::get('/admin/BestCS', [ProjectController::class, 'viewBestCSThesis'])->name('admin/BestCS');
+
     
     Route::get('/admin/roles', function () {
         return Inertia::render('AdminView/AdminManageRoles');
     })->name('admin/roles');
     });
+
+    Route::get('/admin/faculty-members', [AdminController::class, 'getFacultyMembers']);
+    Route::put('/admin/faculty-members/{id}/update-department', [AdminController::class, 'updateDepartment']);
+    Route::put('/admin/faculty-members/{id}/update-coordinator', [AdminController::class, 'updateCoordinator']);
+    Route::put('/admin/faculty-members/{id}/deactivate', [AdminController::class, 'deactivateUser']);
+    Route::put('/admin/faculty-members/{id}/reactivate', [AdminController::class, 'reactivateUser']);
+
     
 
     #Faculty Routing

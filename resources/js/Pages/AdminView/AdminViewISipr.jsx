@@ -1,20 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../../css/AdminView/AdminIPreg.css";
-import { router, usePage } from '@inertiajs/react'; 
+import { router, usePage } from '@inertiajs/react';
 import AdminSidebar from "./AdminSidebar";
 import Header from "../General/Header";
 import Footer from "../General/Footer";
 import AdminModal from "./AdminModal";
 
 const AdminViewISipr = () => {
-  const { isCapstoneProjects } = usePage().props;
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterYear, setFilterYear] = useState("all");
+
+  const getCurrentYear = () => new Date().getFullYear();
+
+  const { 
+    isCapstoneProjects, 
+    searchQuery: initialSearchQuery, 
+    filterYear: initialFilterYear, 
+    filterSpecialization: initialFilterSpecialization, 
+    sortBy: initialSortBy 
+  } = usePage().props;
+
+  const currentYear = getCurrentYear();
+  
+  // Initialize states with the values passed from the backend or defaults
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery || "");
+  const [filterYear, setFilterYear] = useState(initialFilterYear || "all");
+  const [filterSpecialization, setFilterSpecialization] = useState(initialFilterSpecialization || "");
+  const [sortBy, setSortBy] = useState(initialSortBy || "alphabetical");
   const [showModal, setShowModal] = useState(false);
   const [acmDocument, setAcmDocument] = useState(null);
 
   const handleSearchChange = (e) => setSearchQuery(e.target.value);
   const handleYearFilterChange = (e) => setFilterYear(e.target.value);
+  const handleSpecializationChange = (e) => setFilterSpecialization(e.target.value);
+  const handleSortChange = (e) => setSortBy(e.target.value);
 
   const handleAdd = () => {
     router.visit("/admin/add-IS-Cap");
@@ -25,9 +42,8 @@ const AdminViewISipr = () => {
     setShowModal(true);
   };
 
-  const handleViewFullDoc = (doc) => {
-    // Navigate to AdminFullDocu with document data
-    router.visit("/admin/full-document", { state: { fullDocument: doc } });
+  const handleViewFullDoc = (id) => {
+    router.visit(`/admin/full-document/${id}`);
   };
 
   const handleViewApproval = (doc) => {
@@ -37,6 +53,38 @@ const AdminViewISipr = () => {
   const handleEdit = (projectId) => {
     router.visit(`/admin/edit-IS-Cap/${projectId}`);
   };
+
+  // Use a flag to avoid updating on initial render
+  const [isFirstRender, setIsFirstRender] = useState(true);
+
+  // Listen to changes and trigger only when filters or sort options are updated
+  useEffect(() => {
+    if (!isFirstRender) {
+      // Preserve the selected filters when reloading
+      router.visit(route('admin/ip-registered/IS-cap', {
+
+        filterYear: filterYear,
+        filterSpecialization: filterSpecialization,
+        sortBy: sortBy
+      }), { preserveState: true, preserveScroll: true });
+    } else {
+      setIsFirstRender(false); // Ensure subsequent updates will trigger
+    }
+  }, [searchQuery, filterYear, filterSpecialization, sortBy]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault(); // Prevent page reload
+
+    router.visit(route('admin/ip-registered/IS-cap', {
+      search: searchQuery,
+    }), { preserveState: true, preserveScroll: true });
+  };
+  const toggleBestCapstone = (projectId, isBest) => {
+    router.put(`/admin/toggle-best-capstone/${projectId}`, {
+      is_best_proj: isBest
+    }, { preserveScroll: true });
+  };
+
 
   return (
     <div className="admin-home">
@@ -48,51 +96,52 @@ const AdminViewISipr = () => {
             <header className="capstone-header">
               <h1>IP-registered IS Capstone Projects</h1>
               <div className="search-bar">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                />
-                <button className="search-button">
-                  <img src="/search-icon.png" alt="Search" />
-                </button>
+                <form onSubmit={handleSearchSubmit}>
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                  />
+                  <button type="submit" className="search-button">
+                    <img src="/search-icon.png" alt="Search" />
+                  </button>
+                </form>
               </div>
             </header>
 
             {/* Filters */}
             <div className="capstone-filters">
-              <div className="filter-year">
-                <button
-                  className={filterYear === "all" ? "active" : ""}
-                  onClick={() => setFilterYear("all")}
-                >
-                  All
-                </button>
-                <button
-                  className={filterYear === "2019-2023" ? "active" : ""}
-                  onClick={() => setFilterYear("2019-2023")}
-                >
-                  2019-2023
-                </button>
-                <button
-                  className={filterYear === "2014-2018" ? "active" : ""}
-                  onClick={() => setFilterYear("2014-2018")}
-                >
-                  2014-2018
-                </button>
-              </div>
-              <div className="availability-filters">
-                <button>Available for Viewing</button>
-                <button>Restricted</button>
-                <button>More</button>
-              </div>
               <div className="sort-dropdown">
-                <label>Sort by</label>
-                <select>
+                <label>Year:</label>
+                <select value={filterYear} onChange={handleYearFilterChange}>
+                  <option value="all">All</option>
+                  <option value="at-most-5">At most 5 years old</option>
+                  <option value="at-least-5">At least 5 years old</option>
+                  {Array.from({ length: currentYear - 2013 }, (_, i) => (
+                    <option key={i} value={currentYear - i}>
+                      {currentYear - i}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="sort-dropdown">
+                <label>Specialization:</label>
+                <select value={filterSpecialization} onChange={handleSpecializationChange}>
+                  <option value="">All Specializations</option>
+                  <option value="Service Management	">Service Management	</option>
+                  <option value="Business Analytics	">Business Analytics	</option>
+                </select>
+              </div>
+
+              <div className="sort-dropdown">
+                <label>Sort by:</label>
+                <select value={sortBy} onChange={handleSortChange}>
+                  <option value="alphabetical">Alphabetical (Title)</option>
                   <option value="newest">Newest</option>
                   <option value="oldest">Oldest</option>
-                  <option value="title">Title</option>
+                  <option value="best">Best</option>
                 </select>
               </div>
             </div>
@@ -107,77 +156,63 @@ const AdminViewISipr = () => {
                   <th>Year Published</th>
                   <th>Author/s</th>
                   <th>Keyword/s</th>
+                  <th>Best Capstone</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {isCapstoneProjects.map((project, index) => (
-                  <tr key={project.id}>
-                    <td>{project.ipRegistration}</td>
-                    <td>{project.title}</td>
-                    <td>{project.specialization}</td>
-                    <td>{project.yearPublished}</td>
-                    <td>{project.author1}, {project.author2}, {project.author3}, {project.author4}</td>
-                    <td>{project.keywords}</td>
-                    <td>
-                      <button className="view-button">
-                        Add to Best IS Capstone list
-                      </button>
-                      <button
-                        className="view-button"
-                        onClick={() => handleEdit(project.id)} 
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="view-button"
-                        onClick={() =>
-                          handleViewAcm(`ACM Document for ${project.title}`)
-                        }
-                      >
-                        View ACM
-                      </button>
-                      <button
-                        className="view-button"
-                        onClick={() =>
-                          handleViewFullDoc(
-                            `Full Document for ${project.title}`
-                          )
-                        }
-                      >
-                        View Full Document
-                      </button>
-                      <button
-                        className="view-button"
-                        onClick={() =>
-                          handleViewApproval(
-                            `Approval form for ${project.title}`
-                          )
-                        }
-                      >
-                        View Approval Form
-                      </button>
-                    </td>
+                {Array.isArray(isCapstoneProjects.data) && isCapstoneProjects.data.length > 0 ? (
+                  isCapstoneProjects.data.map((project) => (
+                    <tr key={project.id}>
+                      <td>{project.ipRegistration}</td>
+                      <td>{project.title}</td>
+                      <td>{project.specialization}</td>
+                      <td>{project.yearPublished}</td>
+                      <td>{project.author1}, {project.author2}, {project.author3}, {project.author4}</td>
+                      <td>{project.keywords}</td>
+                      <td>
+                        <input 
+                          type="checkbox" 
+                          checked={project.is_best_proj} 
+                          onChange={(e) => toggleBestCapstone(project.id, e.target.checked)} 
+                        />
+                      </td>
+                      <td>
+                        <button className="view-button" onClick={() => handleEdit(project.id)}>Edit</button>
+                        <button className="view-button" onClick={() => handleViewAcm(`ACM Document for ${project.title}`)}>View ACM</button>
+                        <button className="view-button" onClick={() => handleViewFullDoc(project.id)}>View Full Document</button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="7">No projects available.</td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
 
+            {/* Pagination */}
+            <div className="pagination">
+              {isCapstoneProjects.links.map((link, index) => (
+                <button
+                  key={index}
+                  disabled={!link.url}
+                  onClick={() => router.get(link.url)}
+                  dangerouslySetInnerHTML={{ __html: link.label }}
+                  className={link.active ? 'active' : ''}
+                />
+              ))}
+            </div>
+
             <footer className="capstone-footer">
-              <button className="submit-button" onClick={handleAdd}>
-                Add IS Capstone Project
-              </button>
+              <button className="submit-button" onClick={handleAdd}>Add IS Capstone Project</button>
             </footer>
           </div>
         </main>
       </div>
 
-      <AdminModal
-        showModal={showModal}
-        setShowModal={setShowModal}
-        acmDocument={acmDocument}
-      />
-
+      <AdminModal showModal={showModal} setShowModal={setShowModal} acmDocument={acmDocument} />
       <Footer />
     </div>
   );

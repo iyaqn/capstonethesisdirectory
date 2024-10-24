@@ -21,7 +21,8 @@ return new class extends Migration
             $table->string('password');
             $table->string('user_type')->nullable();    #Student, Faculty, Admin
             $table->string('user_course')->nullable();  #IT, IS, CS
-            $table->boolean('is_coordinator')->nullable(); #For Admin to edit
+            $table->boolean('is_coordinator')->default('0'); #For Admin to edit
+            $table->string('status')->default('active');
             $table->rememberToken();
             $table->timestamps();
         });

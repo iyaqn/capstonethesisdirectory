@@ -25,7 +25,7 @@ class Project extends Model
         'pub_mat',
         'approvalForm', 
         'sourceCode', 
-        'best_proj', 
+        'is_best_proj', 
         'keywords', 
         'status'
     ];

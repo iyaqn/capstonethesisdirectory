@@ -32,7 +32,7 @@ return new class extends Migration
 
             $table->string(column: 'course')->nullable();
             $table->string(column: 'pub_mat')->nullable();
-            $table->boolean('is_best_proj')->nullable();
+            $table->boolean('is_best_proj')->default('0');
             $table->string('status')->nullable();
         });
     }

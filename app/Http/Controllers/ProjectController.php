@@ -176,54 +176,177 @@ class ProjectController extends Controller
     public function viewITCapstones(Request $request)
     {
         $searchQuery = $request->input('search');
+        $filterYear = $request->input('filterYear');
+        $filterSpecialization = $request->input('filterSpecialization');
+        $sortBy = $request->input('sortBy');
     
-        // Fetch IT capstone projects from the database with pagination and optional search filtering
-        $itCapstoneProjects = Project::where('course', 'IT')
-            ->when($searchQuery, function ($query, $searchQuery) {
-                $query->where(function ($query) use ($searchQuery) {
-                    $query->where('title', 'LIKE', "%$searchQuery%")
-                        ->orWhere('ipRegistration', 'LIKE', "%$searchQuery%")
-                        ->orWhere('author1', 'LIKE', "%$searchQuery%")
-                        ->orWhere('author2', 'LIKE', "%$searchQuery%")
-                        ->orWhere('author3', 'LIKE', "%$searchQuery%")
-                        ->orWhere('author4', 'LIKE', "%$searchQuery%")
-                        ->orWhere('keywords', 'LIKE', "%$searchQuery%");
-                        
-                });
-            })
-            ->paginate(10); // Adjust the number of items per page
+        $query = Project::where('course', 'IT');
     
-        // Pass the paginated data to the Inertia view
+        // Apply search filter
+        if ($searchQuery) {
+            $query->where(function($q) use ($searchQuery) {
+                $q->where('title', 'like', '%' . $searchQuery . '%')
+                  ->orWhere('keywords', 'like', '%' . $searchQuery . '%')
+                  ->orWhere('author1', 'like', '%' . $searchQuery . '%');
+            });
+        }
+    
+        // Apply year filter
+        if ($filterYear === 'at-most-5') {
+            $query->where('yearPublished', '>=', now()->year - 5);
+        } elseif ($filterYear === 'at-least-5') {
+            $query->where('yearPublished', '<=', now()->year - 5);
+        } elseif (is_numeric($filterYear)) {
+            $query->where('yearPublished', $filterYear);
+        }
+    
+        // Apply specialization filter
+        if ($filterSpecialization) {
+            $query->where('specialization', $filterSpecialization);
+        }
+    
+        // Apply sorting
+        if ($sortBy === 'newest') {
+            $query->orderByRaw('CAST(yearPublished AS UNSIGNED) desc');  // Treat year as a number for sorting
+        } elseif ($sortBy === 'oldest') {
+            $query->orderByRaw('CAST(yearPublished AS UNSIGNED) asc');   // Treat year as a number for sorting
+        } elseif ($sortBy === 'best') {
+            $query->orderBy('is_best_proj', 'desc')  // Best projects appear first
+            ->orderBy('title', 'asc');         // Then everything sorted alphabetically
+        } else {
+            $query->orderBy('title', 'asc');  // Alphabetical sorting as default
+        } 
+
+    
+        // Paginate the results
+        $itCapstoneProjects = $query->paginate(10);
+    
+        // Pass the data to the Inertia view
         return Inertia::render('AdminView/AdminViewITipr', [
             'itCapstoneProjects' => $itCapstoneProjects,
-            'searchQuery' => $searchQuery // Pass the search query back to the frontend
+            'searchQuery' => $searchQuery,
         ]);
     }
     
     
+    
 
-    public function viewCSThesis()
+    public function viewCSThesis(Request $request)
     {
-        
-        $csThesisPapers = Project::where('course', 'CS')->get();
-
-        
+        $searchQuery = $request->input('search');
+        $filterYear = $request->input('filterYear');
+        $filterSpecialization = $request->input('filterSpecialization');
+        $sortBy = $request->input('sortBy');
+    
+        $query = Project::where('course', 'CS');
+    
+        // Apply search filter
+        if ($searchQuery) {
+            $query->where(function($q) use ($searchQuery) {
+                $q->where('title', 'like', '%' . $searchQuery . '%')
+                  ->orWhere('keywords', 'like', '%' . $searchQuery . '%')
+                  ->orWhere('author1', 'like', '%' . $searchQuery . '%');
+            });
+        }
+    
+        // Apply year filter
+        if ($filterYear === 'at-most-5') {
+            $query->where('yearPublished', '>=', now()->year - 5);
+        } elseif ($filterYear === 'at-least-5') {
+            $query->where('yearPublished', '<=', now()->year - 5);
+        } elseif (is_numeric($filterYear)) {
+            $query->where('yearPublished', $filterYear);
+        }
+    
+        // Apply specialization filter
+        if ($filterSpecialization) {
+            $query->where('specialization', $filterSpecialization);
+        }
+    
+        // Apply sorting
+        if ($sortBy === 'newest') {
+            $query->orderByRaw('CAST(yearPublished AS UNSIGNED) desc');  // Treat year as a number for sorting
+        } elseif ($sortBy === 'oldest') {
+            $query->orderByRaw('CAST(yearPublished AS UNSIGNED) asc');   // Treat year as a number for sorting
+        } elseif ($sortBy === 'best') {
+            $query->orderBy('is_best_proj', 'desc')  // Best projects appear first
+            ->orderBy('title', 'asc');         // Then everything sorted alphabetically
+        } else {
+            $query->orderBy('title', 'asc');  // Alphabetical sorting as default
+        } 
+    
+        // Paginate the results
+        $csThesisPapers = $query->paginate(10);
+    
+        // Pass the data to the Inertia view
         return Inertia::render('AdminView/AdminViewCSipr', [
             'csThesisPapers' => $csThesisPapers,
+            'searchQuery' => $searchQuery,
+            'filterYear' => $filterYear,
+            'filterSpecialization' => $filterSpecialization,
+            'sortBy' => $sortBy,
         ]);
     }
+    
 
 
-    public function viewISCapstones()
+    public function viewISCapstones(Request $request)
     {
-
-        $isCapstoneProjects = Project::where('course', 'IS')->get();
-
-
+        $searchQuery = $request->input('search');
+        $filterYear = $request->input('filterYear');
+        $filterSpecialization = $request->input('filterSpecialization');
+        $sortBy = $request->input('sortBy');
+    
+        $query = Project::where('course', 'IS');
+    
+        // Apply search filter
+        if ($searchQuery) {
+            $query->where(function($q) use ($searchQuery) {
+                $q->where('title', 'like', '%' . $searchQuery . '%')
+                  ->orWhere('keywords', 'like', '%' . $searchQuery . '%')
+                  ->orWhere('author1', 'like', '%' . $searchQuery . '%');
+            });
+        }
+    
+        // Apply year filter
+        if ($filterYear === 'at-most-5') {
+            $query->where('yearPublished', '>=', now()->year - 5);
+        } elseif ($filterYear === 'at-least-5') {
+            $query->where('yearPublished', '<=', now()->year - 5);
+        } elseif (is_numeric($filterYear)) {
+            $query->where('yearPublished', $filterYear);
+        }
+    
+        // Apply specialization filter
+        if ($filterSpecialization) {
+            $query->where('specialization', $filterSpecialization);
+        }
+    
+        // Apply sorting
+        if ($sortBy === 'newest') {
+            $query->orderByRaw('CAST(yearPublished AS UNSIGNED) desc');  // Treat year as a number for sorting
+        } elseif ($sortBy === 'oldest') {
+            $query->orderByRaw('CAST(yearPublished AS UNSIGNED) asc');   // Treat year as a number for sorting
+        } elseif ($sortBy === 'best') {
+            $query->orderBy('is_best_proj', 'desc')  // Best projects appear first
+            ->orderBy('title', 'asc');         // Then everything sorted alphabetically
+        } else {
+            $query->orderBy('title', 'asc');  // Alphabetical sorting as default
+        } 
+    
+        // Paginate the results
+        $isCapstoneProjects = $query->paginate(10);
+    
+        // Pass the data to the Inertia view
         return Inertia::render('AdminView/AdminViewISipr', [
             'isCapstoneProjects' => $isCapstoneProjects,
+            'searchQuery' => $searchQuery,
+            'filterYear' => $filterYear,
+            'filterSpecialization' => $filterSpecialization,
+            'sortBy' => $sortBy,
         ]);
     }
+    
 
     public function showFullDocument($id)
     {
@@ -236,7 +359,108 @@ class ProjectController extends Controller
             'fullDocument' => $fullDocument ?? 'No document available.', // Fallback if no document exists
         ]);
     }
+    public function toggleBestCapstone(Request $request, $id)
+    {
+        // Find the project by ID
+        $project = Project::findOrFail($id);
     
+        // Check if the project is being marked as 'best'
+        $isBestProj = $request->input('is_best_proj') ? true : false;
     
+        // If it's being marked as 'best', check the current number of best capstones for the same specialization
+        if ($isBestProj) {
+            // Count the number of projects that are already marked as "best" in the same specialization
+            $bestCapstonesCount = Project::where('specialization', $project->specialization)
+                ->where('is_best_proj', true)
+                ->count();
+    
+            // If the count is 3 or more, prevent further marking
+            if ($bestCapstonesCount >= 3) {
+                return back()->withErrors(['message' => 'You can only have 3 best capstones per specialization.']);
+            }
+        }
+    
+        // Update the is_best_proj field
+        $project->is_best_proj = $isBestProj;
+    
+        // Save the changes
+        $project->save();
+    
+        return back()->with('success', 'Best Capstone status updated.');
+    }
+    
+
+    public function viewBestITCapstones()
+{
+    // Fetch the best projects from the database for each specialization
+    $bestWebAndMobile = Project::where('specialization', 'Web and Mobile App Development')
+                                ->where('is_best_proj', true)
+                                ->get();
+    
+    $bestITAutomation = Project::where('specialization', 'IT Automation')
+                                ->where('is_best_proj', true)
+                                ->get();
+    
+    $bestNetworkSecurity = Project::where('specialization', 'Network Security')
+                                  ->where('is_best_proj', true)
+                                  ->get();
+
+    // Pass the data to the Inertia view
+    return Inertia::render('AdminView/AdminBestIT', [
+        'bestProjects' => [
+            'webAndMobile' => $bestWebAndMobile,
+            'itAutomation' => $bestITAutomation,
+            'networkSecurity' => $bestNetworkSecurity
+        ]
+    ]);
+}
+
+public function viewBestISCapstones()
+{
+    // Fetch the best projects from the database for each specialization
+    $bestBusAnalytics = Project::where('specialization', 'Business Analytics')
+                                ->where('is_best_proj', true)
+                                ->get();
+    
+    $bestServMan = Project::where('specialization', 'Service Management')
+                          ->where('is_best_proj', true)
+                          ->get();
+
+    // Pass the data to the Inertia view
+    return Inertia::render('AdminView/AdminBestIS', [
+        'bestProjects' => [
+            'busAnalytics' => $bestBusAnalytics,
+            'servMan' => $bestServMan,
+        ]
+    ]);
+}
+
+public function viewBestCSThesis()
+{
+    // Fetch the best projects from the database for each specialization
+    $bestCoreCS = Project::where('specialization', 'Core Computer Science')
+                          ->where('is_best_proj', true)
+                          ->get();
+    
+    $bestGameDev = Project::where('specialization', 'Game Development')
+                          ->where('is_best_proj', true)
+                          ->get();
+    
+    $bestDataAnal = Project::where('specialization', 'Data Analytics')
+                          ->where('is_best_proj', true)
+                          ->get();
+
+    // Pass the data to the Inertia view
+    return Inertia::render('AdminView/AdminBestCS', [
+        'bestProjects' => [
+            'coreCS' => $bestCoreCS,
+            'gameDev' => $bestGameDev,
+            'dataAnal' => $bestDataAnal,
+        ]
+    ]);
+}
+
+
+
 
 }
