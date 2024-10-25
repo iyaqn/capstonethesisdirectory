@@ -1,5 +1,4 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
 import FacultySidebar from './FacultySidebar';
 import Header from '../General/Header';
 import Footer from '../General/Footer';

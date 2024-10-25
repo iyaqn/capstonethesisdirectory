@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import AdminLogin from "./AdminView/AdminLogin";
 import StudentLogin from "./StudentView/StudentLogin";
 import FacultyLogin from "./FacultyView/FacultyLogin";
