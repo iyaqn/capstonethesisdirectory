@@ -10,10 +10,7 @@ class AdminController extends Controller
     /**
      * Show the admin dashboard.
      */
-    public function index()
-    {
-        return view('admin.dashboard');
-    }
+
     public function getFacultyMembers() {
         $faculty = User::where('user_type', 'faculty')->get();
         return response()->json($faculty);
