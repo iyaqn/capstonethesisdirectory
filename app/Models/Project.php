@@ -29,4 +29,10 @@ class Project extends Model
         'keywords', 
         'status'
     ];
+
+    // Define the relationship with the `Group` model
+    public function group()
+    {
+        return $this->hasOne(Group::class);
+    }
 }
