@@ -24,7 +24,7 @@ const AdminEditITCap = () => {
     acmPaper: null,  // No need to show the current uploaded document
     sourceCode: null,  // No need to show the current uploaded document
     approvalForm: null,  // No need to show the current uploaded document
-    keywords: project?.keywords || '',
+    tags: project?.tags || '',
   });
 
   // Handle input text changes
@@ -205,16 +205,16 @@ const AdminEditITCap = () => {
                 {errors.approvalForm && <div>{errors.approvalForm}</div>}
               </div>
 
-              {/* Keywords */}
+              {/* tags */}
               <div className="form-group">
-                <label>Keywords:</label>
+                <label>tags:</label>
                 <input
                   type="text"
-                  name="keywords"
-                  value={data.keywords}
+                  name="tags"
+                  value={data.tags}
                   onChange={handleChange}
                 />
-                {errors.keywords && <div>{errors.keywords}</div>}
+                {errors.tags && <div>{errors.tags}</div>}
               </div>
 
               {/* Form Actions */}

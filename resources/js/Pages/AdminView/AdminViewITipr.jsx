@@ -4,7 +4,6 @@ import { router, usePage } from '@inertiajs/react';
 import AdminSidebar from "./AdminSidebar";
 import Header from "../General/Header";
 import Footer from "../General/Footer";
-import AdminModal from "./AdminModal";
 
 const AdminViewITipr = () => {
 
@@ -26,8 +25,6 @@ const AdminViewITipr = () => {
   const [filterYear, setFilterYear] = useState(initialFilterYear || "all");
   const [filterSpecialization, setFilterSpecialization] = useState(initialFilterSpecialization || "");
   const [sortBy, setSortBy] = useState(initialSortBy || "alphabetical");
-  const [showModal, setShowModal] = useState(false);
-  const [acmDocument, setAcmDocument] = useState(null);
 
   const handleSearchChange = (e) => setSearchQuery(e.target.value);
   const handleYearFilterChange = (e) => setFilterYear(e.target.value);
@@ -37,20 +34,6 @@ const AdminViewITipr = () => {
   const handleAdd = () => {
     router.visit("/admin/add-IT-Cap");
   };
-
-  const handleViewAcm = (doc) => {
-    setAcmDocument(doc);
-    setShowModal(true);
-  };
-
-  const handleViewFullDoc = (id) => {
-    router.visit(`/admin/full-document/${id}`);
-  };
-
-  const handleViewApproval = (doc) => {
-    router.visit("/admin/approval-form", { state: { approvalFrom: doc } });
-  };
-
   const handleEdit = (projectId) => {
     router.visit(`/admin/edit-IT-Cap/${projectId}`);
   };
@@ -161,9 +144,12 @@ const AdminViewITipr = () => {
                   <th>Specialization</th>
                   <th>Year Published</th>
                   <th>Author/s</th>
-                  <th>Keyword/s</th>
+                  <th>tag/s</th>
                   <th>Best Capstone</th>
-                  <th>Actions</th>
+                  <th>Edit</th>
+                  <th>View Full Document</th>
+                  <th>View ACM</th>
+                  <th>Source Code Link</th>
                 </tr>
               </thead>
               <tbody>
@@ -175,7 +161,7 @@ const AdminViewITipr = () => {
                       <td>{project.specialization}</td>
                       <td>{project.yearPublished}</td>
                       <td>{project.author1}, {project.author2}, {project.author3}, {project.author4}</td>
-                      <td>{project.keywords}</td>
+                      <td>{project.tags}</td>
                       <td>
                         <input 
                           type="checkbox" 
@@ -185,9 +171,47 @@ const AdminViewITipr = () => {
                       </td>
                       <td>
                         <button className="view-button" onClick={() => handleEdit(project.id)}>Edit</button>
-                        <button className="view-button" onClick={() => handleViewAcm(`ACM Document for ${project.title}`)}>View ACM</button>
-                        <button className="view-button" onClick={() => handleViewFullDoc(project.id)}>View Full Document</button>
                       </td>
+                      <td>
+                        {project.acmPaper && (
+                          <a 
+                            href={`/storage/${project.acmPaper}`} 
+                            download={`${project.title}_ACM_Paper.pdf`}
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="document-link"
+                          >
+                            Download ACM
+                          </a>
+                        )}
+                        </td>
+                        <td>
+                        {project.fullDocument && (
+                          <a 
+                            href={`/storage/${project.fullDocument}`} 
+                            download={`${project.title}_Full_Document.pdf`}
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="document-link"
+                          >
+                            Download Full Document
+                          </a>
+                        )}
+                      </td>
+                      <td>
+  {project.sourceCode ? (
+    <a 
+      href={project.sourceCode} 
+      target="_blank" 
+      rel="noopener noreferrer"
+    >
+      View Source Code
+    </a>
+  ) : (
+    "No source code available"
+  )}
+</td>
+
                     </tr>
                   ))
                 ) : (
@@ -218,7 +242,7 @@ const AdminViewITipr = () => {
         </main>
       </div>
 
-      <AdminModal showModal={showModal} setShowModal={setShowModal} acmDocument={acmDocument} />
+
       <Footer />
     </div>
   );

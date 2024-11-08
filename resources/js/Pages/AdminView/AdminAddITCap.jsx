@@ -20,8 +20,7 @@ const AdminAddITCap = () => {
     fullDocument: null,
     acmPaper: null,
     sourceCode: null,
-    approvalForm: null,
-    keywords: "",
+    tags: "",
     course: 'IT', // Always set course to "IT"
 
   });
@@ -188,7 +187,7 @@ const AdminAddITCap = () => {
               <div className="form-group">
                 <label>Source Code:</label>
                 <input
-                  type="file"
+                  type="text"
                   name="sourceCode"
                   onChange={handleFileChange}
                 />
@@ -196,24 +195,14 @@ const AdminAddITCap = () => {
               </div>
 
               <div className="form-group">
-                <label>Approval Form:</label>
-                <input
-                  type="file"
-                  name="approvalForm"
-                  onChange={handleFileChange}
-                />
-                {errors.approvalForm && <div>{errors.approvalForm}</div>}
-              </div>
-
-              <div className="form-group">
-                <label>Keywords:</label>
+                <label>tags:</label>
                 <input
                   type="text"
-                  name="keywords"
-                  value={data.keywords}
+                  name="tags"
+                  value={data.tags}
                   onChange={handleChange}
                 />
-                {errors.keywords && <div>{errors.keywords}</div>}
+                {errors.tags && <div>{errors.tags}</div>}
               </div>
 
               <div className="form-actions">

@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -15,164 +16,7 @@ use Inertia\Response;
 
 class ProjectController extends Controller
 {
-    //
-    public function createIT(): Response
-    {
-        return Inertia::render('AdminView/AdminAddITCap');
-    }
-    public function createIS(): Response
-    {
-        return Inertia::render('AdminView/AdminAddISCap');
-    }
-
-    public function createCS(): Response
-    {
-        return Inertia::render('AdminView/AdminAddCSThes');
-    }
-    public function store(Request $request)
-    {
-        // Validate the request
-        $validated = $request->validate([
-            'ipRegistration' => 'required|string|max:255',
-            'specialization' => 'required|string|max:255',
-            'title' => 'required|string|max:255',
-            'author1' => 'required|string|max:255',
-            'author2' => 'nullable|string|max:255',
-            'author3' => 'nullable|string|max:255',
-            'author4' => 'nullable|string|max:255',
-            'technicalAdviser' => 'required|string|max:255',
-            'yearPublished' => 'required|integer',
-            'fullDocument' => 'nullable|file',
-            'acmPaper' => 'nullable|file',
-            'sourceCode' => 'nullable|file',
-            'approvalForm' => 'nullable|file',
-            'keywords' => 'required|string|max:255',
-            'course' => 'nullable|string',
-        ]);
-
-        // Store the capstone project
-        $project = new Project();
-        $project->fill($validated);
-
-        // Handle file uploads
-        if ($request->hasFile('fullDocument')) {
-            $project->fullDocument = $request->file('fullDocument')->store('documents', 'public');
-        }
-        if ($request->hasFile('acmPaper')) {
-            $project->acmPaper = $request->file('acmPaper')->store('documents', 'public');
-        }
-        if ($request->hasFile('sourceCode')) {
-            $project->sourceCode = $request->file('sourceCode')->store('documents', 'public');
-        }
-        if ($request->hasFile('approvalForm')) {
-            $project->approvalForm = $request->file('approvalForm')->store('documents', 'public');
-        }
-
-        // Save the capstone project
-        $project->save();
-
-    // Redirect to respective view pages based on the course
-    if ($project->course === 'IT') {
-        return redirect()->route('admin/ip-registered/IT-cap')->with('success', 'Capstone project added successfully!');
-    } elseif ($project->course === 'CS') {
-        return redirect()->route('admin/ip-registered/CS-thes')->with('success', 'Capstone project added successfully!');
-    } elseif ($project->course === 'IS') {
-        return redirect()->route('admin/ip-registered/IS-cap')->with('success', 'Capstone project added successfully!');
-    }
-
-    // Fallback redirection (optional)
-    return redirect()->back()->with('success', 'Capstone project added successfully!');
-    }
-    
-    public function editIT($id)
-{
-    // Fetch the project by ID
-    $project = Project::findOrFail($id);
-
-    // Pass the project data to the Inertia view
-    return Inertia::render('AdminView/AdminEditITCap', [
-        'project' => $project
-    ]);
-}
-    public function editIS($id)
-    {
-        $project = Project::findOrFail($id);
-
-        return Inertia::render('AdminView/AdminEditCSThesis', [
-            'project' => $project,
-        ]);
-    }
-
-    public function editCS($id)
-    {
-        $project = Project::findOrFail($id);
-
-        return Inertia::render('AdminView/AdminEditCSThesis', [
-            'project' => $project,
-        ]);
-    }
-
-
-    public function update(Request $request, $id)
-    {
-        // Validate the request
-        $validated = $request->validate([
-            'ipRegistration' => 'required|string|max:255',
-            'specialization' => 'required|string|max:255',
-            'title' => 'required|string|max:255',
-            'author1' => 'required|string|max:255',
-            'author2' => 'nullable|string|max:255',
-            'author3' => 'nullable|string|max:255',
-            'author4' => 'nullable|string|max:255',
-            'technicalAdviser' => 'required|string|max:255',
-            'yearPublished' => 'required|integer',
-            'fullDocument' => 'nullable|file',
-            'acmPaper' => 'nullable|file',
-            'sourceCode' => 'nullable|file',
-            'approvalForm' => 'nullable|file',
-            'keywords' => 'required|string|max:255',
-        ]);
-    
-        // Find the existing project by its ID
-        $project = Project::findOrFail($id);
-    
-        // Update the project with the validated data
-        $project->fill($validated);
-    
-        // Handle file uploads
-        if ($request->hasFile('fullDocument')) {
-            $project->fullDocument = $request->file('fullDocument')->store('documents', 'public');
-        }
-        if ($request->hasFile('acmPaper')) {
-            $project->acmPaper = $request->file('acmPaper')->store('documents', 'public');
-        }
-        if ($request->hasFile('sourceCode')) {
-            $project->sourceCode = $request->file('sourceCode')->store('documents', 'public');
-        }
-        if ($request->hasFile('approvalForm')) {
-            $project->approvalForm = $request->file('approvalForm')->store('documents', 'public');
-        }
-    
-        // Save the updated project
-        $project->save();
-    
-        // Redirect to respective view pages based on the course
-        if ($project->course === 'IT') {
-            return redirect()->route('admin/ip-registered/IT-cap')->with('success', 'Capstone project updated successfully!');
-        } elseif ($project->course === 'CS') {
-            return redirect()->route('admin/ip-registered/CS-thes')->with('success', 'Capstone project updated successfully!');
-        } elseif ($project->course === 'IS') {
-            return redirect()->route('admin/ip-registered/IS-cap')->with('success', 'Capstone project updated successfully!');
-        }
-    
-        // Fallback redirection (optional)
-        return redirect()->back()->with('success', 'Capstone project updated successfully!');
-    }
-    
-    
-
-
-
+// View pages
     public function viewITCapstones(Request $request)
     {
         $searchQuery = $request->input('search');
@@ -187,7 +31,7 @@ class ProjectController extends Controller
             $query->where(function($q) use ($searchQuery) {
                 $q->where('title', 'like', '%' . $searchQuery . '%')
                   ->orWhere('keywords', 'like', '%' . $searchQuery . '%')
-                  ->orWhere('author1', 'like', '%' . $searchQuery . '%');
+                  ->orWhere('tags', 'like', '%' . $searchQuery . '%');
             });
         }
     
@@ -227,10 +71,6 @@ class ProjectController extends Controller
             'searchQuery' => $searchQuery,
         ]);
     }
-    
-    
-    
-
     public function viewCSThesis(Request $request)
     {
         $searchQuery = $request->input('search');
@@ -245,7 +85,7 @@ class ProjectController extends Controller
             $query->where(function($q) use ($searchQuery) {
                 $q->where('title', 'like', '%' . $searchQuery . '%')
                   ->orWhere('keywords', 'like', '%' . $searchQuery . '%')
-                  ->orWhere('author1', 'like', '%' . $searchQuery . '%');
+                  ->orWhere('tags', 'like', '%' . $searchQuery . '%');
             });
         }
     
@@ -287,9 +127,6 @@ class ProjectController extends Controller
             'sortBy' => $sortBy,
         ]);
     }
-    
-
-
     public function viewISCapstones(Request $request)
     {
         $searchQuery = $request->input('search');
@@ -304,7 +141,7 @@ class ProjectController extends Controller
             $query->where(function($q) use ($searchQuery) {
                 $q->where('title', 'like', '%' . $searchQuery . '%')
                   ->orWhere('keywords', 'like', '%' . $searchQuery . '%')
-                  ->orWhere('author1', 'like', '%' . $searchQuery . '%');
+                  ->orWhere('tags', 'like', '%' . $searchQuery . '%');
             });
         }
     
@@ -346,6 +183,214 @@ class ProjectController extends Controller
             'sortBy' => $sortBy,
         ]);
     }
+    public function createIT(): Response
+    {
+        return Inertia::render('AdminView/AdminAddITCap');
+    }
+    public function createIS(): Response
+    {
+        return Inertia::render('AdminView/AdminAddISCap');
+    }
+    public function createCS(): Response
+    {
+        return Inertia::render('AdminView/AdminAddCSThes');
+    }
+    public function editIT($id)
+{
+    // Fetch the project by ID
+    $project = Project::findOrFail($id);
+
+    // Pass the project data to the Inertia view
+    return Inertia::render('AdminView/AdminEditITCap', [
+        'project' => $project
+    ]);
+}
+    public function editIS($id)
+    {
+        $project = Project::findOrFail($id);
+
+        return Inertia::render('AdminView/AdminEditCSThesis', [
+            'project' => $project,
+        ]);
+    }
+    public function editCS($id)
+    {
+        $project = Project::findOrFail($id);
+
+        return Inertia::render('AdminView/AdminEditCSThesis', [
+            'project' => $project,
+        ]);
+    }
+
+
+    public function store(Request $request)
+    {
+        // Validate the request
+        $validated = $request->validate([
+            'ipRegistration' => 'required|string|max:255',
+            'specialization' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
+            'author1' => 'required|string|max:255',
+            'author2' => 'nullable|string|max:255',
+            'author3' => 'nullable|string|max:255',
+            'author4' => 'nullable|string|max:255',
+            'technicalAdviser' => 'required|string|max:255',
+            'yearPublished' => 'required|integer',
+            'fullDocument' => 'nullable|file',
+            'acmPaper' => 'nullable|file',
+            'sourceCode' => 'nullable|string',
+            'approvalForm' => 'nullable|file',
+            'keywords' => 'nullable|string|max:255',
+            'tags' => 'nullable|string|max:255',
+            'course' => 'nullable|string',
+        ]);
+    
+        $project = new Project();
+        $project->fill($validated);
+    
+        // Sanitize title for filenames
+        $sanitizedTitle = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $validated['title']);
+    
+        // Handle file uploads
+        if ($request->hasFile('fullDocument')) {
+            $fullDocument = $request->file('fullDocument');
+            $fullDocumentFilename = $sanitizedTitle . '_Full_Document.' . $fullDocument->getClientOriginalExtension();
+            
+            // Store the file with the custom filename
+            $project->fullDocument = $fullDocument->storeAs('documents', $fullDocumentFilename, 'public');
+    
+            // Make a POST request to the external API to get keywords
+            $response = Http::attach(
+                'file',
+                file_get_contents($fullDocument->getRealPath()),
+                $fullDocument->getClientOriginalName()
+            )->post('https://file-keywords-generator-production.up.railway.app/api/keywords-generator/file-upload/');
+            
+            if ($response->successful()) {
+                $keywordsData = $response->json();
+                if (isset($keywordsData['keywords']) && is_array($keywordsData['keywords'])) {
+                    $project->keywords = implode(', ', $keywordsData['keywords']);
+                } else {
+                    $project->keywords = null;
+                }
+            } else {
+                return back()->withErrors(['message' => 'Failed to generate keywords from the document.']);
+            }
+        }
+    
+        if ($request->hasFile('acmPaper')) {
+            $acmPaper = $request->file('acmPaper');
+            $acmPaperFilename = $sanitizedTitle . '_ACM_Paper.' . $acmPaper->getClientOriginalExtension();
+            
+            // Store the file with the custom filename
+            $project->acmPaper = $acmPaper->storeAs('documents', $acmPaperFilename, 'public');
+        }
+    
+    
+        // Save the project
+        $project->save();
+    
+        // Redirect based on the course attribute
+        switch ($project->course) {
+            case 'IT':
+                return redirect()->route('admin/ip-registered/IT-cap')->with('success', 'Capstone project added successfully!');
+            case 'CS':
+                return redirect()->route('admin/ip-registered/CS-thes')->with('success', 'Capstone project added successfully!');
+            case 'IS':
+                return redirect()->route('admin/ip-registered/IS-cap')->with('success', 'Capstone project added successfully!');
+            default:
+                return redirect()->back()->with('success', 'Capstone project added successfully!');
+        }
+    }
+    
+    
+    
+    public function update(Request $request, $id)
+    {
+        // Validate the request
+        $validated = $request->validate([
+            'ipRegistration' => 'required|string|max:255',
+            'specialization' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
+            'author1' => 'required|string|max:255',
+            'author2' => 'nullable|string|max:255',
+            'author3' => 'nullable|string|max:255',
+            'author4' => 'nullable|string|max:255',
+            'technicalAdviser' => 'required|string|max:255',
+            'yearPublished' => 'required|integer',
+            'fullDocument' => 'nullable|file',
+            'acmPaper' => 'nullable|file',
+            'sourceCode' => 'nullable|string',
+            'approvalForm' => 'nullable|file',
+            'keywords' => 'nullable|string|max:255',
+            'tags' => 'nullable|string|max:255',
+        ]);
+    
+        // Find the existing project by its ID
+        $project = Project::findOrFail($id);
+        
+        // Update the project with the validated data
+        $project->fill($validated);
+    
+        // Sanitize title for filenames
+        $sanitizedTitle = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $validated['title']);
+    
+        // Handle file uploads
+        if ($request->hasFile('fullDocument')) {
+            $fullDocument = $request->file('fullDocument');
+            $fullDocumentFilename = $sanitizedTitle . '_Full_Document.' . $fullDocument->getClientOriginalExtension();
+            
+            // Store the file with the custom filename
+            $project->fullDocument = $fullDocument->storeAs('documents', $fullDocumentFilename, 'public');
+    
+            // Make a POST request to the external API to get keywords
+            $response = Http::attach(
+                'file',
+                file_get_contents($fullDocument->getRealPath()),
+                $fullDocument->getClientOriginalName()
+            )->post('https://file-keywords-generator-production.up.railway.app/api/keywords-generator/file-upload/');
+            
+            if ($response->successful()) {
+                $keywordsData = $response->json();
+                if (isset($keywordsData['keywords']) && is_array($keywordsData['keywords'])) {
+                    $project->keywords = implode(', ', $keywordsData['keywords']);
+                } else {
+                    $project->keywords = null;
+                }
+            } else {
+                return back()->withErrors(['message' => 'Failed to generate keywords from the document.']);
+            }
+        }
+    
+        if ($request->hasFile('acmPaper')) {
+            $acmPaper = $request->file('acmPaper');
+            $acmPaperFilename = $sanitizedTitle . '_ACM_Paper.' . $acmPaper->getClientOriginalExtension();
+            
+            // Store the file with the custom filename
+            $project->acmPaper = $acmPaper->storeAs('documents', $acmPaperFilename, 'public');
+        }
+    
+    
+        // Save the updated project
+        $project->save();
+    
+        // Redirect based on the course attribute
+        switch ($project->course) {
+            case 'IT':
+                return redirect()->route('admin/ip-registered/IT-cap')->with('success', 'Capstone project updated successfully!');
+            case 'CS':
+                return redirect()->route('admin/ip-registered/CS-thes')->with('success', 'Capstone project updated successfully!');
+            case 'IS':
+                return redirect()->route('admin/ip-registered/IS-cap')->with('success', 'Capstone project updated successfully!');
+            default:
+                return redirect()->back()->with('success', 'Capstone project updated successfully!');
+        }
+    }
+    
+    
+    
+
+
     
 
     public function showFullDocument($id)

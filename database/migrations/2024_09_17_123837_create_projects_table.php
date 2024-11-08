@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('sourceCode')->nullable();
             $table->string('approvalForm')->nullable();
             $table->string('keywords')->nullable();
-
+            $table->string(column: 'tags')->nullable();
             $table->string(column: 'course')->nullable();
             $table->string(column: 'pub_mat')->nullable();
             $table->boolean('is_best_proj')->default('0');
