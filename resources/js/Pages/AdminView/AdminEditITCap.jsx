@@ -157,15 +157,24 @@ const AdminEditITCap = () => {
 
               {/* Year Published */}
               <div className="form-group">
-                <label>Year Published:</label>
-                <input
-                  type="text"
-                  name="yearPublished"
-                  value={data.yearPublished}
-                  onChange={handleChange}
-                />
-                {errors.yearPublished && <div>{errors.yearPublished}</div>}
-              </div>
+  <label>Year Published:</label>
+  <select
+    name="yearPublished"
+    value={data.yearPublished}
+    onChange={handleChange}
+  >
+    <option value="" disabled selected>Select Year</option>
+    {Array.from({ length: new Date().getFullYear() - 2013 }, (_, i) => {
+      const year = new Date().getFullYear() - i;
+      return (
+        <option key={year} value={year}>
+          {year}
+        </option>
+      );
+    })}
+  </select>
+  {errors.yearPublished && <div>{errors.yearPublished}</div>}
+</div>
 
               {/* File Uploads */}
               <div className="form-group">
@@ -189,21 +198,14 @@ const AdminEditITCap = () => {
               <div className="form-group">
                 <label>Source Code:</label>
                 <input
-                  type="file"
+                  type="text"
                   name="sourceCode"
                   onChange={handleFileChange}
                 />
                 {errors.sourceCode && <div>{errors.sourceCode}</div>}
               </div>
-              <div className="form-group">
-                <label>Approval Form:</label>
-                <input
-                  type="file"
-                  name="approvalForm"
-                  onChange={handleFileChange}
-                />
-                {errors.approvalForm && <div>{errors.approvalForm}</div>}
-              </div>
+
+
 
               {/* tags */}
               <div className="form-group">

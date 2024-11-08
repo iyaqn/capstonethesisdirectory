@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
+use App\Models\Log;
 use App\Models\Project;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -9,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log as LaravelLog;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -16,6 +18,16 @@ use Inertia\Response;
 
 class ProjectController extends Controller
 {
+
+    public function viewLogs()
+    {
+        $logs = Log::with('user')->orderBy('created_at', 'desc')->paginate(10);
+        return Inertia::render('AdminView/AdminLogs', [
+            'logs' => $logs,
+        ]);
+    }
+    
+
 // View pages
     public function viewITCapstones(Request $request)
     {
@@ -289,6 +301,19 @@ class ProjectController extends Controller
     
         // Save the project
         $project->save();
+
+        //Logger
+        $user = Auth::user();
+        Log::create([
+            'user_id' => $user->id,
+            'action' => 'Added a new project called ' . $sanitizedTitle,
+            'log_course' => $user->user_course,
+            'log_type' => Auth::user()->user_type,
+            'created_at' => now(),
+        ]);
+
+
+
     
         // Redirect based on the course attribute
         switch ($project->course) {

@@ -154,15 +154,24 @@ const AdminAddITCap = () => {
               </div>
 
               <div className="form-group">
-                <label>Year Published:</label>
-                <input
-                  type="text"
-                  name="yearPublished"
-                  value={data.yearPublished}
-                  onChange={handleChange}
-                />
-                {errors.yearPublished && <div>{errors.yearPublished}</div>}
-              </div>
+  <label>Year Published:</label>
+  <select
+    name="yearPublished"
+    value={data.yearPublished}
+    onChange={handleChange}
+  >
+    <option value="" disabled selected>Select Year</option>
+    {Array.from({ length: new Date().getFullYear() - 2013 }, (_, i) => {
+      const year = new Date().getFullYear() - i;
+      return (
+        <option key={year} value={year}>
+          {year}
+        </option>
+      );
+    })}
+  </select>
+  {errors.yearPublished && <div>{errors.yearPublished}</div>}
+</div>
 
               <div className="form-group">
                 <label>Full Document:</label>

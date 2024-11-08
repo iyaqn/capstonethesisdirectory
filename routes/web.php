@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
     #Admin Routing
     Route::middleware(['auth', 'role:admin'])->group(function () {
-        
+        Route::get('/admin/logs', [ProjectController::class, 'viewLogs'])->name('admin/logs');
         Route::get('/admin-home', function () {
             return Inertia::render('AdminView/AdminHome');
         })->name('admin-home');
@@ -181,3 +181,4 @@ Route::middleware('auth')->group(function(){
 });
 
 #Temporary Routes cos scuffed
+
