@@ -30,14 +30,12 @@ class AdminController extends Controller
     
     
 
-    public function deactivateUser($userId) {
-        $user = User::find($userId);
-        if ($user) {
-            $user->status = 'inactive';
-            $user->save();
-            return redirect()->back()->with('message', 'User account deactivated successfully.');
-        }
-        return redirect()->back()->withErrors('User not found.');
+    public function deactivateUser($id) {
+        $user = User::findOrFail($id);
+        $user->status = 'inactive';
+        $user->save();
+    
+        return response()->json(['message' => 'User deactivated successfully']);
     }
 
     public function reactivateUser($id) {

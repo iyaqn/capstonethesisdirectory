@@ -13,10 +13,7 @@ class Project extends Model
         'ipRegistration', 
         'title', 
         'technicalAdviser', 
-        'author1', 
-        'author2', 
-        'author3', 
-        'author4', 
+        'authors', 
         'course',
         'specialization', 
         'yearPublished', 
@@ -28,6 +25,9 @@ class Project extends Model
         'is_best_proj', 
         'keywords', 
         'status'
+    ];
+    protected $casts = [
+        'authors' => 'array', // Cast authors as an array
     ];
 
     // Define the relationship with the `Group` model

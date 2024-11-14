@@ -40,7 +40,6 @@ const AdminAddITCap = () => {
     e.preventDefault();
 
     // Submitting form data to backend via Inertia post method
-    setData('course', 'IT');
     post(route('admin/add-IT-Cap'), {
       onSuccess: () => reset()  // Reset form after successful submission
     });

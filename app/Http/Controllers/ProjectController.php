@@ -75,11 +75,28 @@ class ProjectController extends Controller
 
     
         // Paginate the results
-        $itCapstoneProjects = $query->paginate(10);
+        $itCapstoneProjects = $query->paginate(perPage: 10);
     
         // Pass the data to the Inertia view
         return Inertia::render('AdminView/AdminViewITipr', [
-            'itCapstoneProjects' => $itCapstoneProjects,
+            'itCapstoneProjects' => [
+                'total_items' => $itCapstoneProjects->total(), // Total items
+                'total_pages' => $itCapstoneProjects->lastPage(), // Total pages
+                'current_page' => $itCapstoneProjects->currentPage(),
+                'data' => $itCapstoneProjects->items(),
+
+                'first_page_url' => $itCapstoneProjects->url(1),
+                'from' => $itCapstoneProjects->firstItem(),
+                'last_page' => $itCapstoneProjects->lastPage(),
+                'last_page_url' => $itCapstoneProjects->url($itCapstoneProjects->lastPage()),
+                'links' => $itCapstoneProjects->linkCollection()->toArray(),
+                'next_page_url' => $itCapstoneProjects->nextPageUrl(),
+                'path' => $itCapstoneProjects->path(),
+                'per_page' => $itCapstoneProjects->perPage(),
+                'prev_page_url' => $itCapstoneProjects->previousPageUrl(),
+                'to' => $itCapstoneProjects->lastItem(),
+
+            ],
             'searchQuery' => $searchQuery,
         ]);
     }
@@ -242,10 +259,8 @@ class ProjectController extends Controller
             'ipRegistration' => 'required|string|max:255',
             'specialization' => 'required|string|max:255',
             'title' => 'required|string|max:255',
-            'author1' => 'required|string|max:255',
-            'author2' => 'nullable|string|max:255',
-            'author3' => 'nullable|string|max:255',
-            'author4' => 'nullable|string|max:255',
+            'authors' => 'array',
+            'authors.*' => 'string|max:255', // Validate each author name in the array
             'technicalAdviser' => 'required|string|max:255',
             'yearPublished' => 'required|integer',
             'fullDocument' => 'nullable|file',
@@ -304,11 +319,10 @@ class ProjectController extends Controller
 
         //Logger
         $user = Auth::user();
+
         Log::create([
-            'user_id' => $user->id,
+            'user_id' => $user->id,           // Laravel automatically handles this relation
             'action' => 'Added a new project called ' . $sanitizedTitle,
-            'log_course' => $user->user_course,
-            'log_type' => Auth::user()->user_type,
             'created_at' => now(),
         ]);
 
@@ -337,10 +351,8 @@ class ProjectController extends Controller
             'ipRegistration' => 'required|string|max:255',
             'specialization' => 'required|string|max:255',
             'title' => 'required|string|max:255',
-            'author1' => 'required|string|max:255',
-            'author2' => 'nullable|string|max:255',
-            'author3' => 'nullable|string|max:255',
-            'author4' => 'nullable|string|max:255',
+            'authors' => 'array',
+            'authors.*' => 'string|max:255', // Validate each author name in the array
             'technicalAdviser' => 'required|string|max:255',
             'yearPublished' => 'required|integer',
             'fullDocument' => 'nullable|file',
@@ -398,6 +410,14 @@ class ProjectController extends Controller
     
         // Save the updated project
         $project->save();
+                //Logger
+                $user = Auth::user();
+
+                Log::create([
+                    'user_id' => $user->id,           // Laravel automatically handles this relation
+                    'action' => 'Added a new project called ' . $sanitizedTitle,
+                    'created_at' => now(),
+                ]);
     
         // Redirect based on the course attribute
         switch ($project->course) {
@@ -410,6 +430,9 @@ class ProjectController extends Controller
             default:
                 return redirect()->back()->with('success', 'Capstone project updated successfully!');
         }
+
+
+        
     }
     
     

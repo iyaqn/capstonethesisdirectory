@@ -12,15 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id(); #Student ID for students maybe Incremement for others
-            $table->string('studentNumber')->nullable();
-            $table->string('first_name')->nullable();
-            $table->string('last_name')->nullable();    
+            $table->id(); 
+            $table->string('studentNumber');
+            $table->string('first_name');
+            $table->string('last_name');    
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('user_type')->nullable();    #Student, Faculty, Admin
-            $table->string('user_course')->nullable();  #IT, IS, CS
+            $table->string('user_type');    #Student, Faculty, Admin
+            $table->string('user_course');  #IT, IS, CS
             $table->boolean('is_coordinator')->default('0'); #For Admin to edit
             $table->string('status')->default('active');
             $table->rememberToken();
