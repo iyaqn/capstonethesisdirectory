@@ -16,20 +16,20 @@ return new class extends Migration
             $table->timestamps();
             $table->id();
             $table->string('ipRegistration');
-            $table->string(column: 'specialization');
+            $table->string(column: 'specialization');   
             $table->string('title');
-            $table->json('authors');
+            $table->json('authors')->nullable();
             $table->string('technicalAdviser');
             $table->string('yearPublished');
             $table->string('fullDocument');
             $table->string('acmPaper');
             $table->string('sourceCode');
-            $table->string('approvalForm');
-            $table->string('keywords');
-            $table->string(column: 'tags');
+            $table->string('approvalForm')->nullable();
+            $table->string('keywords')->nullable();
+            $table->string(column: 'tags')->nullable();
             $table->string(column: 'course');
             $table->boolean('is_best_proj')->default('0');
-            $table->string('status')->nullable();
+            $table->string('status')->nullable(); // status: pending, approved, rejected
         });
     }
 

@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-
+use App\Models\Project;
+use App\Models\Notification;
 class AdminController extends Controller
 {
     /**
@@ -45,5 +46,28 @@ class AdminController extends Controller
         return response()->json(['message' => 'User reactivated successfully']);
     }
     
+
+    public function approveProject(Request $request, $id)
+{
+    $project = Project::findOrFail($id);
+
+    if ($request->status == 'approve') {
+        $project->status = 'approved';
+        $message = 'Your project has been approved.';
+    } elseif ($request->status == 'reject') {
+        $project->status = 'rejected';
+        $message = 'Your project has been rejected.';
+    }
+
+    $project->save();
+
+    // Notify the student
+    Notification::create([
+        'user_id' => $project->user_id, // Student who submitted the project
+        'message' => $message,
+    ]);
+
+    return redirect()->back()->with('success', 'Project status updated.');
+}
     
 }

@@ -9,15 +9,27 @@ class Group extends Model
 {
     use HasFactory;
 
-    // Define the relationship with the `Project` model
+    protected $fillable = [
+        'project_id',
+        'name',
+    ];
+
+    // Relationship to the project
     public function project()
     {
         return $this->belongsTo(Project::class);
     }
 
-    // Define the relationship with the `User` model (students in the group)
-    public function users()
+    // Authors in the group
+    public function authors()
     {
-        return $this->belongsToMany(User::class, 'group_user');
+        return $this->belongsToMany(User::class, 'group_user')->wherePivot('role', 'author');
+    }
+
+    // Technical Adviser (TA) in the group
+    public function ta()
+    {
+        return $this->belongsToMany(User::class, 'group_user')->wherePivot('role', 'ta')->limit(1);
     }
 }
+

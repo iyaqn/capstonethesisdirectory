@@ -49,9 +49,27 @@ class User extends Authenticatable #implements MustVerifyEmail
         ];
     }
 
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
     // Define the relationship with the `Group` model (many-to-many)
     public function groups()
     {
         return $this->belongsToMany(Group::class, 'group_user');
     }
+
+    // Check if the user is an author in a group
+    public function authoredGroups()
+    {
+        return $this->belongsToMany(Group::class, 'group_user')->wherePivot('role', 'author');
+    }
+
+    // Check if the user is a TA in a group
+    public function taGroups()
+    {
+        return $this->belongsToMany(Group::class, 'group_user')->wherePivot('role', 'ta');
+    }
+    
 }

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Log;
 use App\Models\Project;
+use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -265,7 +267,7 @@ class ProjectController extends Controller
             'yearPublished' => 'required|integer',
             'fullDocument' => 'nullable|file',
             'acmPaper' => 'nullable|file',
-            'sourceCode' => 'nullable|string',
+            'sourceCode' => 'nullable|string|max:255',
             'approvalForm' => 'nullable|file',
             'keywords' => 'nullable|string|max:255',
             'tags' => 'nullable|string|max:255',
@@ -282,54 +284,56 @@ class ProjectController extends Controller
         if ($request->hasFile('fullDocument')) {
             $fullDocument = $request->file('fullDocument');
             $fullDocumentFilename = $sanitizedTitle . '_Full_Document.' . $fullDocument->getClientOriginalExtension();
-            
-            // Store the file with the custom filename
             $project->fullDocument = $fullDocument->storeAs('documents', $fullDocumentFilename, 'public');
     
-            // Make a POST request to the external API to get keywords
-            $response = Http::attach(
-                'file',
-                file_get_contents($fullDocument->getRealPath()),
-                $fullDocument->getClientOriginalName()
-            )->post('https://file-keywords-generator-production.up.railway.app/api/keywords-generator/file-upload/');
-            
-            if ($response->successful()) {
-                $keywordsData = $response->json();
-                if (isset($keywordsData['keywords']) && is_array($keywordsData['keywords'])) {
-                    $project->keywords = implode(', ', $keywordsData['keywords']);
-                } else {
-                    $project->keywords = null;
+            // Optional: Make an API call for keywords
+            try {
+                $response = Http::attach(
+                    'file',
+                    file_get_contents($fullDocument->getRealPath()),
+                    $fullDocument->getClientOriginalName()
+                )->post('https://file-keywords-generator-production.up.railway.app/api/keywords-generator/file-upload/');
+    
+                if ($response->successful()) {
+                    $keywordsData = $response->json();
+                    if (isset($keywordsData['keywords']) && is_array($keywordsData['keywords'])) {
+                        $project->keywords = implode(', ', $keywordsData['keywords']);
+                    }
                 }
-            } else {
-                return back()->withErrors(['message' => 'Failed to generate keywords from the document.']);
+            } catch (\Exception $e) {
+                // Log the exception if necessary
+                Log::error('Keyword generation failed: ' . $e->getMessage());
             }
         }
     
         if ($request->hasFile('acmPaper')) {
             $acmPaper = $request->file('acmPaper');
             $acmPaperFilename = $sanitizedTitle . '_ACM_Paper.' . $acmPaper->getClientOriginalExtension();
-            
-            // Store the file with the custom filename
             $project->acmPaper = $acmPaper->storeAs('documents', $acmPaperFilename, 'public');
         }
     
-    
-        // Save the project
+        // Store the project
         $project->save();
-
-        //Logger
+    
+        // Log the action
         $user = Auth::user();
-
         Log::create([
-            'user_id' => $user->id,           // Laravel automatically handles this relation
+            'user_id' => $user->id,
             'action' => 'Added a new project called ' . $sanitizedTitle,
             'created_at' => now(),
         ]);
-
-
-
     
-        // Redirect based on the course attribute
+        // Notify admins
+        $adminUsers = User::where('user_type', 'Admin')->get();
+        foreach ($adminUsers as $admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'type' => 'project_edit',
+                'message' => "A project titled '{$project->title}' has been added by {$user->name}.",
+            ]);
+        }
+    
+        // Redirect based on the course
         switch ($project->course) {
             case 'IT':
                 return redirect()->route('admin/ip-registered/IT-cap')->with('success', 'Capstone project added successfully!');
@@ -341,6 +345,7 @@ class ProjectController extends Controller
                 return redirect()->back()->with('success', 'Capstone project added successfully!');
         }
     }
+    
     
     
     
@@ -441,7 +446,7 @@ class ProjectController extends Controller
 
     
 
-    public function showFullDocument($id)
+    public function showFullDocument($id)//might remove later
     {
         // Retrieve the project based on its ID
         $project = Project::findOrFail($id); // Find the project by ID, or return 404 if not found
