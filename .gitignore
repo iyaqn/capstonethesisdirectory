@@ -7,7 +7,7 @@
 /storage/*.key
 /vendor
 #regenerate ^ by composer install
-# .env
+.env
 .env.backup
 .env.production
 .phpactor.json

@@ -329,7 +329,7 @@ class ProjectController extends Controller
             Notification::create([
                 'user_id' => $admin->id,
                 'type' => 'project_edit',
-                'message' => "A project titled '{$project->title}' has been added by {$user->name}.",
+                'message' => "A project titled '{$project->title}' has been added by {$user->first_name} {$user->last_name}.",
             ]);
         }
     
