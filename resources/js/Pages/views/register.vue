@@ -58,7 +58,7 @@
                     label="REGISTER"
                     type="submit"
                     :loading="isLoading"
-                    @click="submitForm"
+                    
                 />
             </form>
         </div>

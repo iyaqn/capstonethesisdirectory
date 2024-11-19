@@ -36,7 +36,7 @@ class RegisteredUserController extends Controller
             $request->validate([
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
-                'studentNumber' => 'required|string|max:255',
+                // 'studentNumber' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|ends_with:.cics@gmail.com|unique:users',
                 'user_course' => 'required|string|in:CS,IT,IS',  // Validation for course
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -48,14 +48,14 @@ class RegisteredUserController extends Controller
             $request->validate([
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
-                'studentNumber' => 'required|string|max:255',
+                // 'studentNumber' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|ends_with:@gmail.com|unique:users',
                 'user_course' => 'required|string|in:CS,IT,IS',  // Validation for course
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
             ]);
 
             $user_type = 'faculty';  // Assign user type as "faculty"
-            $request->merge(['studentNumber' => null]);
+            // $request->merge(['studentNumber' => null]);
         } else {
             return redirect()->back()->withErrors(['email' => 'Email must end with either .cics@gmail.com or @gmail.com']);
         }
@@ -64,14 +64,15 @@ class RegisteredUserController extends Controller
         $user = User::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
-            'studentNumber' => $request->studentNumber,
+            // 'studentNumber' => $request->studentNumber,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'user_type' => $user_type,
             'user_course' => $request->user_course,  // Save the course
         ]);
 
-        event(new Registered($user));
+        
+        event(args: new Registered($user));
 
         // $user->sendEmailVerificationNotification();
 
