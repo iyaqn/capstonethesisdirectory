@@ -1,0 +1,58 @@
+$breakpoints: (
+  "xs": 0,
+  "sm-phone": 360px,
+  "m-phone": 550px,
+  "lg-phone": 768px,
+  "tablet": 990px,
+  "sm-desktop": 1400px,
+  "desktop": 1630px,
+  "LGdesktop": 1920px,
+);
+
+@mixin xs {
+  @media (max-width: map-get($breakpoints, "xs")) {
+    @content;
+  }
+}
+
+@mixin sm-phone {
+  @media (max-width: map-get($breakpoints, "sm-phone")) and (min-width: map-get($breakpoints, "xs")) {
+    @content;
+  }
+}
+
+@mixin m-phone {
+  @media (max-width: map-get($breakpoints, "m-phone")) and (min-width: map-get($breakpoints, "sm-phone")) {
+    @content;
+  }
+}
+
+@mixin lg-phone {
+  @media (max-width: map-get($breakpoints, "lg-phone")) and (min-width: map-get($breakpoints, "m-phone")) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (max-width: map-get($breakpoints, "tablet")) and (min-width: map-get($breakpoints, "lg-phone")) {
+    @content;
+  }
+}
+
+@mixin sm-desktop {
+  @media (max-width: map-get($breakpoints, "sm-desktop")) and (min-width: map-get($breakpoints, "tablet")) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (max-width: map-get($breakpoints, "desktop")) and (min-width: map-get($breakpoints, "sm-desktop")) {
+    @content;
+  }
+}
+
+@mixin LGdesktop {
+  @media (max-width: map-get($breakpoints, "LGdesktop")) and (min-width: map-get($breakpoints, "desktop")) {
+    @content;
+  }
+}

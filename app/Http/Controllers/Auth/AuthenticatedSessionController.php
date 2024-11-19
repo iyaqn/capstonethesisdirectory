@@ -18,7 +18,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Auth/Login', [
+        return Inertia::render('login', [
             'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
         ]);
@@ -31,13 +31,13 @@ class AuthenticatedSessionController extends Controller
     {
         // Authenticate the user
         $request->authenticate();
-    
+
         // Regenerate the session to prevent fixation attacks
         $request->session()->regenerate();
-    
+
         // Get the authenticated user
         $user = Auth::user();
-    
+
         // Redirect based on user role
         if ($user->user_type === 'admin') {
             return redirect()->route('admin-home');
@@ -49,7 +49,7 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('dashboard');
         }
     }
-    
+
 
     /**
      * Destroy an authenticated session.

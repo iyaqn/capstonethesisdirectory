@@ -8,12 +8,12 @@ use App\Http\Controllers\ProjectController;
 use App\Models\Project;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-    #Admin Routing
-    Route::middleware(['auth', 'role:admin'])->group(function () {
-        Route::get('/admin/logs', [ProjectController::class, 'viewLogs'])->name('admin/logs');
-        Route::get('/admin-home', function () {
-            return Inertia::render('AdminView/AdminHome');
-        })->name('admin-home');
+#Admin Routing
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/logs', [ProjectController::class, 'viewLogs'])->name('admin/logs');
+    Route::get('/admin-home', function () {
+        return Inertia::render('AdminView/AdminHome');
+    })->name('admin-home');
 
     // Admin View IP Reg
     Route::get('/admin/ip-registered/IT-cap', [ProjectController::class, 'viewITCapstones'])->name('admin/ip-registered/IT-cap');
@@ -39,47 +39,47 @@ use Inertia\Inertia;
     Route::put('/admin/edit-IS-Cap/{id}', [ProjectController::class, 'update'])->name('admin/update-IS-Cap');
     Route::put('/admin/edit-CS-Thes/{id}', [ProjectController::class, 'update'])->name('admin/update-CS-Thes');
 
-    
+
     Route::get('/admin/approval-IT', function () {
         return Inertia::render('AdminView/AdminITApproval');
     })->name('admin/approval-IT');
-    
+
     Route::get('/admin/approval-IS', function () {
         return Inertia::render('AdminView/AdminISApproval');
     })->name('admin/approval-IS');
-    
+
     Route::get('/admin/approval-CS', function () {
         return Inertia::render('AdminView/AdminCSApproval');
     })->name('admin/approval-CS');
-    
+
     Route::get('admin/full-document/{id}', [ProjectController::class, 'showFullDocument'])->name('admin/full-document');
 
-    
+
     Route::get('/admin/approval-form', function () {
         return Inertia::render('AdminView/AdminApprovalForm');
     })->name('admin/approval-form');
-    
+
     // Admin Best Proj
     Route::get('/admin/BestIT', [ProjectController::class, 'viewBestITCapstones'])->name('admin/BestIT');
     Route::get('/admin/BestIS', [ProjectController::class, 'viewBestISCapstones'])->name('admin/BestIS');
     Route::get('/admin/BestCS', [ProjectController::class, 'viewBestCSThesis'])->name('admin/BestCS');
 
-    
+
     Route::get('/admin/roles', function () {
         return Inertia::render('AdminView/AdminManageRoles');
     })->name('admin/roles');
-    });
+});
 
-    Route::get('/admin/faculty-members', [AdminController::class, 'getFacultyMembers']);
-    Route::put('/admin/faculty-members/{id}/update-department', [AdminController::class, 'updateDepartment']);
-    Route::put('/admin/faculty-members/{id}/update-coordinator', [AdminController::class, 'updateCoordinator']);
-    Route::put('/admin/faculty-members/{id}/deactivate', [AdminController::class, 'deactivateUser']);
-    Route::put('/admin/faculty-members/{id}/reactivate', [AdminController::class, 'reactivateUser']);
+Route::get('/admin/faculty-members', [AdminController::class, 'getFacultyMembers']);
+Route::put('/admin/faculty-members/{id}/update-department', [AdminController::class, 'updateDepartment']);
+Route::put('/admin/faculty-members/{id}/update-coordinator', [AdminController::class, 'updateCoordinator']);
+Route::put('/admin/faculty-members/{id}/deactivate', [AdminController::class, 'deactivateUser']);
+Route::put('/admin/faculty-members/{id}/reactivate', [AdminController::class, 'reactivateUser']);
 
-    
 
-    #Faculty Routing
-    Route::middleware(['auth', 'role:faculty'])->group(function () {
+
+#Faculty Routing
+Route::middleware(['auth', 'role:faculty'])->group(function () {
     Route::get('/faculty-home', function () {
         return Inertia::render('FacultyView/FacultyHome');
     })->name('faculty-home');
@@ -117,8 +117,8 @@ use Inertia\Inertia;
 
 
 
-    # Student Routing 
-    Route::middleware(['auth', 'role:student'])->group(function () {
+# Student Routing 
+Route::middleware(['auth', 'role:student'])->group(function () {
 
 
 
@@ -160,11 +160,11 @@ use Inertia\Inertia;
 });
 
 
-    #Auth
-    
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+#Auth
+
+Route::get('/home', function () {
+    return Inertia::render('home');
+})->middleware(['auth', 'verified'])->name('home');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -172,13 +172,16 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+Route::get('/email/verify', function () {
+    return Inertia::render('login'); // Your Inertia page for email verification
+})->middleware('auth')->name('verification.notice');
 
-Route::middleware('auth')->group(function(){
-    Route::get('/', function(){
-        return Inertia::render('Dashboard');
+require __DIR__ . '/auth.php';
+
+Route::middleware('auth')->group(function () {
+    Route::get('/', function () {
+        return Inertia::render('home');
     });
 });
 
 #Temporary Routes cos scuffed
-

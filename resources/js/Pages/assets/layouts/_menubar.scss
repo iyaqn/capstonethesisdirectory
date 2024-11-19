@@ -1,0 +1,76 @@
+.menubar {
+  position: fixed;
+  right: -350px;
+  height: 100vh;
+  width: 350px;
+  border-radius: 500px 0 0 0;
+  background: rgb(243, 178, 0);
+  z-index: 99;
+  transition: 1s all;
+
+  &.active {
+    right: 0;
+  }
+
+  .close-icon {
+    position: absolute;
+    right: 60px;
+    top: 50px;
+    font-size: 40px;
+    cursor: pointer;
+    transition: transform 0.5s ease; /* Controls the rotation speed */
+
+    &:hover {
+      transform: rotate(360deg);
+    }
+  }
+
+  .menu-links {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    gap: 20px;
+    left: 80px;
+
+    .main-links {
+      gap: 20px;
+    }
+
+    .admin-links {
+      gap: 20px;
+    }
+
+    a {
+      text-decoration: none;
+      font-size: 30px;
+      font-weight: 800;
+      color: black;
+      transition: 0.2s all;
+
+      &:hover {
+        color: white;
+      }
+    }
+  }
+
+  .user-links {
+    position: absolute;
+    gap: 20px;
+    left: 80px;
+    bottom: 40px;
+
+    p {
+      text-decoration: none;
+      font-size: 30px;
+      font-weight: 800;
+      color: black;
+      margin: 0;
+      transition: 0.2s all;
+      cursor: pointer;
+
+      &:hover {
+        color: white;
+      }
+    }
+  }
+}

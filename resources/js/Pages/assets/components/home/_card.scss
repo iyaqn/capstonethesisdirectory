@@ -1,0 +1,56 @@
+.card {
+  flex-grow: 1;
+  flex-basis: 300px;
+  height: 100px;
+  padding: 20px;
+  background: #eeb6bf;
+  position: relative;
+  cursor: pointer;
+  transition: 0.4s all;
+
+  &:hover {
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+      rgba(0, 0, 0, 0.3) 0px 7px 13px -3px,
+      rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+  }
+
+  .header {
+    position: absolute;
+    top: -53px;
+    left: 20px;
+
+    h1 {
+      font-size: 40px;
+    }
+  }
+
+  img {
+    position: absolute;
+  }
+
+  p {
+    position: absolute;
+    font-size: 49px;
+    text-align: right;
+    font-weight: 800;
+    bottom: -30px;
+    right: 20px;
+    color: #636363;
+  }
+}
+
+.first {
+  img {
+    left: 70px;
+    top: 0;
+    width: 170px;
+  }
+}
+
+.last {
+  img {
+    left: 0px;
+    top: 0;
+    width: 200px;
+  }
+}

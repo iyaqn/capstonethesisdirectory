@@ -1,0 +1,17 @@
+@import "./breakpoints/breakpoints";
+@import "./variables/variables";
+@import "./constants/constants";
+@import "./fonts/fonts";
+@import "./components/components";
+@import "./layouts/navbar";
+@import "./layouts/footer";
+@import "./layouts/menubar";
+
+@import "./userauth";
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "EudoxusSans", sans-serif;
+  background: #fff7f9;
+}
